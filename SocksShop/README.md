@@ -2,6 +2,8 @@
 # A microservices-based architecture application deployed on Kubernetes.
 
 
+![project](./image/Capstone.drawio.png)
+
 I aim to deploy a microservices-based application, specifically the Socks Shop, using a modern approach that emphasizes automation and efficiency. The goal is to use Infrastructure as Code (IaaC) for rapid and reliable deployment on Kubernetes.
 
 This project will be implemented with Terraform(Iac), GitHub Actions(ci/cd), Kubernetes(container orchestration), Helm, Prometheus, and ELK Stack(logging).
@@ -91,7 +93,7 @@ The `az aks get-credentials` command is used to get the access credentials for t
 ```
 This is the location of the manifest file to deploy.
 ```bash
-    kubectl apply -f deploy.yaml
+    kubectl apply -f deploy.yml
 ```
 
 * We can verify our deployment with the command
@@ -111,3 +113,37 @@ This is the location of the manifest file to deploy.
 ```bash
   terraform destroy -auto-approve
 ```
+
+# Montoring
+
+First navigate into the monitoring folder  and create the monitoring namespace using the `00-monitoring-ns.yaml` file:
+
+```bash
+cd Monitoring
+
+$ kubectl create -f 00-monitoring-ns.yaml
+```
+
+### Prometheus
+
+To deploy simply apply all the prometheus manifests (01-10) in any order:
+
+`kubectl apply $(ls *-prometheus-*.yaml | awk ' { print " -f " $1 } ')`
+
+The prometheus server will be exposed on Nodeport `31090`.
+![prometheus](./image/prometheus.png)
+
+### Grafana
+
+First apply the grafana manifests from 20 to 22:
+
+`kubectl apply $(ls *-grafana-*.yaml | awk ' { print " -f " $1 }'  | grep -v grafana-import)`
+
+Once the grafana pod is in the Running state apply the `23-grafana-import-dash-batch.yaml` manifest to import the Dashboards:
+
+`kubectl apply -f 23-grafana-import-dash-batch.yaml`
+
+Grafana will be exposed on the NodePort `31300` 
+![graph-1](./image/graph-1.png)
+![graph-2](./image/graph-2.png)
+![graph-2](./image/graph-3.png)
