@@ -1,0 +1,17 @@
+prefix = "victor-capstone"
+location = "eastus"
+address_space = "10.0.0.0/19"
+subnetNum = 2
+role_definition_name = "Network Contributor"
+service_cidr = "10.0.64.0/19"
+dns_service_ip = "10.0.64.10"
+vm_size = "Standard_D2_v2"
+node_count = 1
+min_count = 1
+max_count = 5
+enable_auto_scaling = true
+private_cluster_enabled = false
+automatic_channel_upgrade = "stable"
+sku_tier = "Free"
+oidc_issuer_enabled = true
+workload_identity_enabled = true

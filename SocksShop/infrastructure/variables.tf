@@ -1,0 +1,17 @@
+variable "prefix" {}
+variable "location" {}
+variable "address_space" {}
+variable "subnetNum" {}
+variable "role_definition_name" {}
+variable "service_cidr" {}
+variable "dns_service_ip" {}
+variable "vm_size" {}
+variable "node_count" {}
+variable "min_count" {}
+variable "max_count" {}
+variable "enable_auto_scaling" {}
+variable "private_cluster_enabled" {}
+variable "automatic_channel_upgrade" {}
+variable "sku_tier" {}
+variable "oidc_issuer_enabled" {}
+variable "workload_identity_enabled" {}
