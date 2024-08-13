@@ -147,3 +147,49 @@ Grafana will be exposed on the NodePort `31300`
 ![graph-1](./image/graph-1.png)
 ![graph-2](./image/graph-2.png)
 ![graph-2](./image/graph-3.png)
+
+# Logging
+We will be utilizing the ELK stack to implement logging in our provisioned resources. The stack consists of Elasticsearch, Logstash, Kibana and Filebeat.
+
+* Install with Helm
+The following command will will add all the repositories that we need for our Elastic stack
+
+``` bash
+helm repo add elastic https://helm.elastic.co
+```
+* Install each componet
+Run the installation in this order:
+
+``` bash
+cd ekasticsearch
+helm install elasticsearch elastic/elasticsearch -f values.yml -n monitoring
+```
+
+``` bash
+cd filebeat
+helm install filebeat elastic/filebeat -f values.yml -n monitoring
+```
+
+``` bash
+cd logstash
+helm install logstash elastic/logstash -f values.yml -n monitoring
+```
+
+``` bash
+cd kibana
+helm install kibana elastic/kibana -f values.yml -n monitoring
+```
+![elk](./image/elk-deploy.png)
+![elk](./image/elastic-search.png)
+
+* Get the login credentials
+
+```bash
+kubectl get secret elasticsearch-master-credentials -o jsonpath="{.data.username}" | base64 --decode
+
+kubectl get secret elasticsearch-master-credentials -o jsonpath="{.data.password}" | base64 --decode
+```
+![elk](./image/elastic.png)
+
+# Conclusion
+This project is about deploying a microservices-based application using automated tools to ensure quick, reliable, and secure deployment on Kubernetes. 
