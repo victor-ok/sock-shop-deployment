@@ -58,3 +58,16 @@ jobs:
 
       - name: Azure login
         run: az login
+
+      - name: Terraform init, plan and apply/destroy (infrastructure)
+        run: |
+          if [ -d "infrastructure" ]; then
+            cd infrastructure && \
+            terraform init || { echo "Terraform initialization failed"; exit 1; } && \
+            terraform validate || { echo "Terraform validation failed"; exit 1; } && \
+            terraform plan -out=tfplan || { echo "Terraform planning failed"; exit 1; } && \
+            terraform apply tfplan || { echo "Terraform apply failed"; exit 1; }
+          else
+            echo "The 'infrastructure' directory does not exist."
+            exit 1
+          fi
