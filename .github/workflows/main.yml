@@ -61,6 +61,7 @@ jobs:
 
       - name: Terraform init, plan and apply/destroy (infrastructure)
         run: |
+          if [ -d "SocksShop" ]; then
             cd ./SocksShop/infrastructure && \
             terraform init || { echo "Terraform initialization failed"; exit 1; } && \
             terraform validate || { echo "Terraform validation failed"; exit 1; } && \
