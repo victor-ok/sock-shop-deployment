@@ -36,7 +36,7 @@ jobs:
       - name: checkout code
         uses: actions/checkout@v3
 
-      - name: Install necessary dependency
+      - name: Install neccessary dependency
         run: |
           sudo apt-get update
           sudo apt-get install -y curl unzip wget apt-transport-https gnupg2 software-properties-common git ca-certificates
@@ -67,6 +67,68 @@ jobs:
             terraform validate || { echo "Terraform validation failed"; exit 1; } && \
             terraform plan -out=tfplan || { echo "Terraform planning failed"; exit 1; } && \
             terraform apply tfplan || { echo "Terraform apply failed"; exit 1; }
+          else
+            echo "The 'infrastructure' directory does not exist."
+            exit 1
+          fi
+      
+      - name: Get AKS credentials
+        run: |
+          az aks get-credentials --resource-group victor-capstone-rg --name victor-capstoneaks
+
+      - name: Deploy Kube App
+        run: |
+          cd k8s && \
+          attempt=1 && \
+          until kubectl apply -f .; do
+            if [ $attempt -eq 2 ]; then
+              echo "Failed to apply microservices YAML after 2 attempts"
+              exit 1
+            fi
+            echo "Retrying applying microservices YAML (attempt $attempt)"
+            sleep 10
+            ((attempt++))
+          done
+
+      # - name: Deploy Prometheus
+      #   run: |
+      #     cd Monitoring && \
+      #     attempt=1 && \
+      #     until kubectl apply $(ls *-prometheus-*.yaml | awk ' { print " -f " $1 } '); do
+      #       if [ $attempt -eq 2 ]; then
+      #         echo "Failed to apply Prometheus Stack CRDs after 2 attempts"
+      #         exit 1
+      #       fi
+      #       echo "Retrying applying Prometheus Stack CRDs (attempt $attempt)"
+      #       sleep 10
+      #       ((attempt++))
+      #     done
+
+      # - name: Deploy Grafana
+      #   run: |
+      #     cd Monitoring && \
+      #     attempt=1 && \
+      #     until kubectl apply $(ls *-grafana-*.yaml | awk ' { print " -f " $1 }'  | grep -v grafana-import); do
+      #       if [ $attempt -eq 2 ]; then
+      #         echo "Failed to apply Prometheus Stack CRDs after 2 attempts"
+      #         exit 1
+      #       fi
+      #       echo "Retrying applying Prometheus Stack CRDs (attempt $attempt)"
+      #       sleep 10
+      #       ((attempt++))
+      #     done
+
+      # - name: Apply Grafana
+      #   run: |
+      #     cd Monitoring && \
+      #     kubectl apply -f 23-grafana-import-dash-batch.yaml
+
+      - name: Clean up
+        if: ${{ github.event.inputs.ACTION == 'build-service' }}
+        run: |
+          if [ -d "SocksShop" ]; then
+            cd ./SocksShop/infrastructure && \
+            terraform destroy -auto-approve || { echo "Terraform destroy failed"; exit 1; }
           else
             echo "The 'infrastructure' directory does not exist."
             exit 1
