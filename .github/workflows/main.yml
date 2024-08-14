@@ -116,6 +116,13 @@ jobs:
       #     cd Monitoring && \
       #     kubectl apply -f 23-grafana-import-dash-batch.yaml
 
+  destroy-service:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.inputs.ACTION == 'destroy-service' }}
+    steps:
+      - name: checkout code
+        uses: actions/checkout@v3
+
       - name: Clean up
         if: ${{ github.event.inputs.ACTION == 'destroy-service' }}
         run: |
