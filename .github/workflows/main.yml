@@ -36,7 +36,7 @@ jobs:
       - name: checkout code
         uses: actions/checkout@v3
 
-      - name: Install neccessary dependency
+      - name: Install necessary dependency
         run: |
           sudo apt-get update
           sudo apt-get install -y curl unzip wget apt-transport-https gnupg2 software-properties-common git ca-certificates
@@ -62,7 +62,7 @@ jobs:
       - name: Terraform init, plan and apply/destroy (infrastructure)
         run: |
           if [ -d "infrastructure" ]; then
-            cd infrastructure && \
+            cd ./SocksShop/infrastructure && \
             terraform init || { echo "Terraform initialization failed"; exit 1; } && \
             terraform validate || { echo "Terraform validation failed"; exit 1; } && \
             terraform plan -out=tfplan || { echo "Terraform planning failed"; exit 1; } && \
