@@ -1,0 +1,60 @@
+name: Deploy To AKS
+
+on:
+  workflow_dispatch:
+    inputs:
+      ACTION:
+        description: Action to perform
+        default: build
+        type: choice
+        options:
+          - build-service
+          - destroy-service
+        required: true
+
+# permissions:
+#       id-token: write
+#       contents: read
+
+jobs:
+  test:
+   runs-on: ubuntu-latest
+   steps:
+    - name: "Checkout source code"
+      uses: actions/checkout@v3
+      with:
+          fetch-depth: 0
+
+# jobs:
+#   dependency:
+#     name: Install Dependencies
+#     runs-on: ubuntu-latest
+  build-service:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.inputs.ACTION == 'build-service' }}
+    steps:
+      - name: checkout code
+        uses: actions/checkout@v3
+
+      - name: Install neccessary dependency
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y curl unzip wget apt-transport-https gnupg2 software-properties-common git ca-certificates
+
+      - name: Install Azure CLI
+        uses: pietrobolcato/install-azure-cli-action@v1.0.1
+
+      - name: Install Terraform
+        uses: little-core-labs/install-terraform@v2.0.0
+        with:
+          version: 1.7.5
+
+      - name: Install kubectl
+        run: |
+          sudo snap install kubectl --classic
+
+      - name: Install Helm
+        uses: Azure/setup-helm@v4.2.0
+
+      - name: Azure login
+        run: az login
