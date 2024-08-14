@@ -59,7 +59,7 @@ jobs:
       - name: Azure login
         run: az login
 
-      - name: Terraform init, plan and apply/destroy (infrastructure)
+      - name: Terraform init, plan and apply(infrastructure)
         run: |
           if [ -d "SocksShop" ]; then
             cd ./SocksShop/infrastructure && \
@@ -80,11 +80,7 @@ jobs:
         run: |
           if [ -d "SocksShop" ]; then
             cd ./SocksShop/k8s && \
-            attempt=1 && \
-            until kubectl apply -f .; do
-          else
-           echo "Failed to apply microservices YAML after 2 attempts"
-           exit 1
+            kubectl apply -f .;
           fi
 
       # - name: Deploy Prometheus
@@ -126,7 +122,4 @@ jobs:
           if [ -d "SocksShop" ]; then
             cd ./SocksShop/infrastructure && \
             terraform destroy -auto-approve || { echo "Terraform destroy failed"; exit 1; }
-          else
-            echo "The 'infrastructure' directory does not exist."
-            exit 1
           fi
