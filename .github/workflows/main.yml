@@ -124,7 +124,7 @@ jobs:
       #     kubectl apply -f 23-grafana-import-dash-batch.yaml
 
       - name: Clean up
-        if: ${{ github.event.inputs.ACTION == 'build-service' }}
+        if: ${{ github.event.inputs.ACTION == 'destroy-service' }}
         run: |
           if [ -d "SocksShop" ]; then
             cd ./SocksShop/infrastructure && \
