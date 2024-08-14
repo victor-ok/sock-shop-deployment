@@ -78,17 +78,14 @@ jobs:
 
       - name: Deploy Kube App
         run: |
-          cd k8s && \
-          attempt=1 && \
-          until kubectl apply -f .; do
-            if [ $attempt -eq 2 ]; then
-              echo "Failed to apply microservices YAML after 2 attempts"
-              exit 1
-            fi
-            echo "Retrying applying microservices YAML (attempt $attempt)"
-            sleep 10
-            ((attempt++))
-          done
+          if [ -d "SocksShop" ]; then
+            cd ./SocksShop/k8s && \
+            attempt=1 && \
+            until kubectl apply -f .; do
+          else
+           echo "Failed to apply microservices YAML after 2 attempts"
+           exit 1
+          fi
 
       # - name: Deploy Prometheus
       #   run: |
